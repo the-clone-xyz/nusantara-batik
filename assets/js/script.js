@@ -115,9 +115,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isOpen) {
             cartDrawer.classList.remove('cart-drawer-open');
             cartBackdrop.classList.remove('backdrop-open');
+            document.body.classList.remove('cart-is-open');
         } else {
             cartDrawer.classList.add('cart-drawer-open');
             cartBackdrop.classList.add('backdrop-open');
+            document.body.classList.add('cart-is-open');
         }
     };
 
@@ -255,18 +257,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cartItems.length === 0) return;
 
         const totalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+        const totalItems = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
-        let waText = `Halo *Batik Nusantara*, saya ingin memesan:\n\n`;
+        // Format tanggal & waktu
+        const now = new Date();
+        const dateOptions = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const formattedDate = now.toLocaleDateString('id-ID', dateOptions);
+
+        let waText = `Halo *Batik Nusantara* 🙏\n`;
+        waText += `Saya ingin memesan produk berikut:\n\n`;
+        waText += `🛒 *Detail Pesanan*\n`;
+        waText += `━━━━━━━━━━━━━━━\n`;
 
         cartItems.forEach((item, index) => {
             waText += `${index + 1}. *${item.name}*\n`;
-            waText += `    Jumlah: ${item.qty} pcs\n`;
-            waText += `    Harga: ${formatRupiah(item.price * item.qty)}\n\n`;
+            waText += `   ${item.qty} pcs × ${formatRupiah(item.price)} = ${formatRupiah(item.price * item.qty)}\n`;
         });
 
-        waText += `*Total Belanja: ${formatRupiah(totalPrice)}*\n`;
-        waText += `(Belum termasuk ongkir)\n\n`;
-        waText += `Tolong bantu cek ketersediaan stoknya ya kak. Terima kasih!`;
+        waText += `━━━━━━━━━━━━━━━\n`;
+        waText += `📦 Total Item: ${totalItems} pcs\n`;
+        waText += `💰 *Total: ${formatRupiah(totalPrice)}*\n`;
+        waText += `_(Belum termasuk ongkir)_\n\n`;
+        waText += `📅 ${formattedDate}\n\n`;
+        waText += `Mohon dicek ketersediaan stoknya ya kak. Terima kasih! 🙏`;
 
         const encodedText = encodeURIComponent(waText);
         const waUrl = `https://wa.me/${ADMIN_WA_NUMBER}?text=${encodedText}`;
